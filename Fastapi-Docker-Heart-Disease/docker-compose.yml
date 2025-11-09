@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  heart-api:
+    build: .
+    container_name: heart_disease_api
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    # volumes:
+    #   - .:/app  # Optional: uncomment for live code changes during development
