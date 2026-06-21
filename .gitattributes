@@ -1,0 +1,2 @@
+Local[[:space:]]OCR[[:space:]]&[[:space:]]Dynamic[[:space:]]RAG[[:space:]]System/*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text

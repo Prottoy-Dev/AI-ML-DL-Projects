@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Local OCR & Dynamic RAG — Demo</title>
+<style>
+  body { font-family: -apple-system, sans-serif; max-width: 760px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 16px; margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; }
+  label { display: block; margin-top: 10px; font-size: 13px; font-weight: 600; color: #444; }
+  input, select, button, textarea { font-size: 14px; padding: 8px; margin-top: 4px; width: 100%; box-sizing: border-box; }
+  button { background: #0066cc; color: white; border: none; cursor: pointer; margin-top: 14px; padding: 10px; font-weight: 600; }
+  button:hover { background: #0052a3; }
+  pre { background: #f4f4f4; padding: 14px; white-space: pre-wrap; font-size: 13px; border-radius: 6px; }
+  .filters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .status { font-size: 13px; color: #888; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<h1>📄 Local OCR & Dynamic RAG System</h1>
+<p style="color:#666;font-size:14px">Upload Bangla/English documents, then search them with natural language + optional filters.</p>
+
+<h2>Upload a document</h2>
+<form id="uploadForm">
+  <label>File (PDF or image)</label>
+  <input type="file" id="fileInput" required>
+
+  <div class="filters">
+    <div>
+      <label>Document type</label>
+      <input type="text" id="docType" value="general" placeholder="invoice, report, contract...">
+    </div>
+    <div>
+      <label>Language</label>
+      <select id="language">
+        <option value="bn">Bangla</option>
+        <option value="en">English</option>
+        <option value="mixed">Mixed</option>
+      </select>
+    </div>
+    <div>
+      <label>Upload date</label>
+      <input type="date" id="uploadDate" required>
+    </div>
+  </div>
+
+  <button type="submit">Upload & Process</button>
+  <div class="status" id="uploadStatus"></div>
+</form>
+<pre id="uploadResult" style="display:none"></pre>
+
+<h2>Search</h2>
+<form id="searchForm">
+  <label>Question</label>
+  <input type="text" id="query" placeholder="e.g. What is the total amount on the invoice?" required>
+
+  <div class="filters">
+    <div>
+      <label>Filter: language</label>
+      <select id="filterLanguage">
+        <option value="">(any)</option>
+        <option value="bn">Bangla</option>
+        <option value="en">English</option>
+        <option value="mixed">Mixed</option>
+      </select>
+    </div>
+    <div>
+      <label>Filter: doc type</label>
+      <input type="text" id="filterDocType" placeholder="(any)">
+    </div>
+    <div>
+      <label>Filter: upload date</label>
+      <input type="date" id="filterDate">
+    </div>
+  </div>
+
+  <button type="submit">Search</button>
+</form>
+<pre id="searchResult" style="display:none"></pre>
+
+<h2>Stored documents</h2>
+<button id="refreshDocs" style="background:#666">Refresh list</button>
+<pre id="docList"></pre>
+
+<script>
+const API_BASE = ""; // same origin
+
+document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const status = document.getElementById("uploadStatus");
+  const resultBox = document.getElementById("uploadResult");
+  status.textContent = "Processing (OCR may take a few seconds)...";
+  resultBox.style.display = "none";
+
+  const formData = new FormData();
+  formData.append("file", document.getElementById("fileInput").files[0]);
+  formData.append("doc_type", document.getElementById("docType").value);
+  formData.append("language", document.getElementById("language").value);
+  formData.append("upload_date", document.getElementById("uploadDate").value);
+
+  try {
+    const resp = await fetch(`${API_BASE}/upload`, { method: "POST", body: formData });
+    const data = await resp.json();
+    status.textContent = resp.ok ? "Done." : "Error.";
+    resultBox.textContent = JSON.stringify(data, null, 2);
+    resultBox.style.display = "block";
+    loadDocs();
+  } catch (err) {
+    status.textContent = "Request failed: " + err;
+  }
+});
+
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const resultBox = document.getElementById("searchResult");
+  resultBox.style.display = "block";
+  resultBox.textContent = "Searching...";
+
+  const body = {
+    query: document.getElementById("query").value,
+    language: document.getElementById("filterLanguage").value || null,
+    doc_type: document.getElementById("filterDocType").value || null,
+    upload_date: document.getElementById("filterDate").value || null,
+  };
+
+  try {
+    const resp = await fetch(`${API_BASE}/search`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    resultBox.textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    resultBox.textContent = "Request failed: " + err;
+  }
+});
+
+async function loadDocs() {
+  const box = document.getElementById("docList");
+  try {
+    const resp = await fetch(`${API_BASE}/documents`);
+    const data = await resp.json();
+    box.textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    box.textContent = "Could not load documents: " + err;
+  }
+}
+document.getElementById("refreshDocs").addEventListener("click", loadDocs);
+loadDocs();
+</script>
+</body>
+</html>

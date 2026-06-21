@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+env/
+
+# Data folder (large CSVs)
+data/*.csv
+
+# Models (pickle/joblib files)
+model/*.pkl
+model/*.joblib
+
+# VS Code settings (optional)
+.vscode/
