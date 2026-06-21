@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  diabetes-api:
+    build: .
+    container_name: diabetes_api
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1

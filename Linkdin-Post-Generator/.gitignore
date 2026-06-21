@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+ENV/
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Test outputs
+*.out
+*.tmp
+
+# Misc
+*.sqlite3
+*.db
+
+# FastAPI
+*.sqlite
+
+# Ignore requirements lock files
+poetry.lock
+Pipfile.lock
+
+# Ignore backups
+*.bak
+
+# Ignore build
+build/
+dist/
+*.egg-info/
