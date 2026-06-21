@@ -143,22 +143,3 @@ that context and to cite which excerpt(s) it used, and to explicitly say
 so if the answer isn't present in the retrieved context rather than
 guessing from outside knowledge.
 
-## Known limitations / honest notes for the write-up
-
-- Tesseract's accuracy on the bundled test document was measured at 100%,
-  but that document is a clean, generated test image — real-world scans
-  with skew, low resolution, or handwriting would likely score lower. A
-  systematic accuracy benchmark would need a larger, more varied real-world
-  test set than time allowed for here.
-- The embedding model runs on CPU; for a larger document collection than
-  this assessment's scope, batching and/or GPU inference would matter for
-  upload latency.
-
-## Demo video checklist
-
-- [ ] Upload a document containing real Bangla text (use `test_docs/test_bilingual_doc.png`
-      or your own scan) and show the local processing log / response confirming
-      no external API was called
-- [ ] Apply a manual metadata filter (e.g. language = Bangla) alongside a
-      natural-language query, and show it correctly narrowing results
-- [ ] Show the RAG-generated answer citing its source excerpt(s)
